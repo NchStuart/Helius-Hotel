@@ -1,6 +1,9 @@
-import { app } from "./app.js";
-import { constants } from "./constants.js";
-import connection from "./config/database.js";
+import * as dotenv from "dotenv";
+import { app } from "./app";
+import { constants } from "./constants";
+import connection from "./config/database";
+
+dotenv.config();
 
 connection.connect(function (err) {
     if (err) throw err;
