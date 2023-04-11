@@ -6,6 +6,11 @@ export default createStore({
     login: false,
     users: [],
     loggedUser: null,
+    accommodations: [
+      { name: "quarto-simples" },
+      { name: "quarto-premium" },
+      { name: "quarto-bangalo" },
+    ],
     cupomList: {
       cincoPorcento: {
         names: ['helius5'],
@@ -52,6 +57,9 @@ export default createStore({
     },
     getReservations(state) {
       return state.reservationsSent;
+    },
+    getAccommodations(state) {
+      return state.accommodations;
     },
   },
   mutations: {

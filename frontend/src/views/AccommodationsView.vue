@@ -1,22 +1,18 @@
 <template>
   <section id="heading1">
-    <div class="fade" v-show="fadeShow"></div>
-    <TitleInitialDescription>
-      <h1>Nossas Acomodações</h1>
-      <hr />
-      <p>
-        As acomodações do Helius Hotel foram projetadas para oferecer todo o
+    <TitleInitialDescription
+      title="Nossas Acomodações"
+      desc="As acomodações do Helius Hotel foram projetadas para oferecer todo o
         conforto e tranqüilidade que você merece. Todos os nossos quartos ficam
         próximos a sala de jogos, ao restaurante, às piscinas e possuem uma
-        vista magnífica para as piscinas!
-      </p>
-    </TitleInitialDescription>
-    <ModalInfo v-if="showModalInfo" />
+        vista magnífica para as piscinas!"
+    />
+
     <CarouselOne
       :images="images"
       @modalAcomodOpen="
         (index) => {
-          openModal(index);
+          openPage(index);
         }
       "
     />
@@ -32,14 +28,12 @@
 <script>
 import TitleInitialDescription from "../components/TitleInitialDescription.vue";
 import CarouselOne from "../components/carousel/CarouselOne.vue";
-import ModalInfo from "../components/accommodations/ModalInfo.vue";
 
 export default {
   name: "AccommodationsView",
   components: {
     TitleInitialDescription,
     CarouselOne,
-    ModalInfo,
   },
   data() {
     return {
@@ -48,7 +42,8 @@ export default {
         { src: require("../assets/images/quarto_premium.jpg") },
         { src: require("../assets/images/bangalo04.jpg") },
       ],
-      accommodations: {
+      accommodations: this.$store.getters.getAccommodations,
+      accommodationsObJ: {
         simples: {
           name: "Quarto Simples",
           desc: "Nossos quartos simples oferecem a melhor opção custo/benefício se você pretende aliar bem estar e economia.",
@@ -62,8 +57,6 @@ export default {
           desc: "Nossos quartos Bangalô são exatamente como o nome já diz: muito mais conforto e requinte para nossos hóspedes. Alguns de nossos quartos bangalô são equipados com sauna.",
         },
       },
-      fadeShow: false,
-      showModalInfo: false,
     };
   },
   methods: {
@@ -94,47 +87,22 @@ export default {
         });
       }
     },
-    reloadScrollBars() {
-      document.documentElement.style.overflow = "auto";
-      document.body.scroll = "yes";
+    openPage(index) {
+      if (index == 0) { // Quarto Simples
+        this.$router.push(`/acomodacoes/${this.accommodations[0].name}`);
+      }
+      if (index == 1) { // Quarto Premium
+        this.$router.push(`/acomodacoes/${this.accommodations[1].name}`);
+      }
+      if (index == 2) { // Quarto Bangalô
+        this.$router.push(`/acomodacoes/${this.accommodations[2].name}`);
+      }
     },
-    unloadScrollBars() {
-      document.documentElement.style.overflow = "hidden";
-      document.body.scroll = "no";
-    },
-    closeModal() {
-      this.fadeShow = false;
-      this.showModalInfo = false;
-      this.reloadScrollBars();
-    },
-    openModal(index) {
-      this.fadeShow = true;
-      setTimeout(() => {
-        document.querySelector(".modal-open2").style.opacity = "100";
-      }, 100);
-      this.showModalInfo = true;
-      this.unloadScrollBars();
-
-      document.querySelector(".fade").addEventListener("click", () => {
-        this.closeModal();
-      });
-    },
-  },
+  }
 };
 </script>
 
 <style lang="scss" scoped>
-
-.fade {
-  display: flex;
-  height: 100%;
-  width: 100%;
-  top: 0;
-  left: 0;
-  position: fixed;
-  z-index: 12;
-  background-color: rgba(0, 0, 0, 0.466);
-}
 .accommodations-bedrooms {
   display: flex;
   justify-content: center;

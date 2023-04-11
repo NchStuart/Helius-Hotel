@@ -70,7 +70,7 @@ export default {
       return;
     }
 
-    this.$router.push("/reservas");
+    this.$router.push("/");
   },
 };
 </script>

@@ -30,7 +30,11 @@ const routes = [
     path: "/acomodacoes",
     name: "acomodacoes",
     component: () => import("../views/AccommodationsView.vue"),
-    
+  },
+  {
+    path: "/acomodacoes/:name",
+    name: "acomodacoesRoom",
+    component: () => import("../views/RoomPageView.vue"),
   },
   {
     path: "/contato",
@@ -67,9 +71,10 @@ const routes = [
       {
         path: "/perfil/:email/minhas-reservas",
         name: "minhas-reservas",
-        component: () => import("../components/profile/ContentMyReservation.vue"),
+        component: () =>
+          import("../components/profile/ContentMyReservation.vue"),
       },
-    ]
+    ],
   },
 ];
 
@@ -77,12 +82,14 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
   scrollBehavior(to, from, savedPosition) {
-    if (to.hash) {
-      console.log(to)
+    if (to.path == "/acomodacoes") {
+      return { top: 300 };
+    } else if (to.path == "/reservas") {
+      return { top: 20 };
     } else {
-      return {top: 0}
+      return { top: 0 };
     }
-  }
+  },
 });
 
 export default router;

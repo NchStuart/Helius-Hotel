@@ -35,7 +35,7 @@ function createFeedBack(req, res) {
                 res.status(200).send({msg:"Avaliação criada com sucesso."});
             }
         });
-    }
+    };
 }
 
 export const feedBackController = {

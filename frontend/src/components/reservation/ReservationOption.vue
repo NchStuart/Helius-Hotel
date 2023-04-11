@@ -473,12 +473,7 @@ export default {
   },
   created() {
     if (this.$store.state.reservationsSent == false) {
-      this.$router.push("/reservas");
-    }
-  },
-  mounted() {
-    if (this.$store.state.reservationsSent == false) {
-      this.$router.push("/reservas");
+      this.$router.push("/");
       return;
     }
     this.reloadScrollBars();
