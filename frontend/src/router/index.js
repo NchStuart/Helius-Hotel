@@ -82,13 +82,7 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
   scrollBehavior(to, from, savedPosition) {
-    if (to.path == "/acomodacoes") {
-      return { top: 300 };
-    } else if (to.path == "/reservas") {
-      return { top: 20 };
-    } else {
       return { top: 0 };
-    }
   },
 });
 

@@ -42,7 +42,6 @@ export default {
         { src: require("../assets/images/quarto_premium.jpg") },
         { src: require("../assets/images/bangalo04.jpg") },
       ],
-      accommodations: this.$store.getters.getAccommodations,
       accommodationsObJ: {
         simples: {
           name: "Quarto Simples",
@@ -89,13 +88,13 @@ export default {
     },
     openPage(index) {
       if (index == 0) { // Quarto Simples
-        this.$router.push(`/acomodacoes/${this.accommodations[0].name}`);
+        this.$router.push(`/acomodacoes/${this.$store.getters.getAccommodations[0].name}`);
       }
       if (index == 1) { // Quarto Premium
-        this.$router.push(`/acomodacoes/${this.accommodations[1].name}`);
+        this.$router.push(`/acomodacoes/${this.$store.getters.getAccommodations[1].name}`);
       }
       if (index == 2) { // Quarto Bangalô
-        this.$router.push(`/acomodacoes/${this.accommodations[2].name}`);
+        this.$router.push(`/acomodacoes/${this.$store.getters.getAccommodations[2].name}`);
       }
     },
   }

@@ -84,7 +84,7 @@
 @media screen and (max-width: 768px) {
   .topBar {
     position: fixed;
-    z-index: 11;
+    z-index: 15;
     width: 100vw;
   }
 

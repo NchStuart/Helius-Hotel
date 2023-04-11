@@ -7,22 +7,34 @@ export default createStore({
     users: [],
     loggedUser: null,
     accommodations: [
-      { name: "quarto-simples" },
-      { name: "quarto-premium" },
-      { name: "quarto-bangalo" },
+      {
+        name: "quarto-simples",
+        desc: "Nossos quartos simples oferecem a melhor opção custo/benefício se você pretende aliar bem estar e economia.",
+        price: "99,90"
+      },
+      {
+        name: "quarto-premium",
+        desc: "Quartos premium com todas as comodidades essenciais para o seu conforto. Todos os nossos apartamentos luxo são de frente e proporcionam aos nossos hóspedes uma vista maravilhosa, além de um espaço reservado especialmente para aqueles que vem a trabalho e precisam utilizar seu notebook.",
+        price: "199,90"
+      },
+      {
+        name: "quarto-bangalo",
+        desc: "Nossos quartos Bangalô são exatamente como o nome já diz: muito mais conforto e requinte para nossos hóspedes. Alguns de nossos quartos bangalô são equipados com sauna.",
+        price: "299,90"
+      },
     ],
     cupomList: {
       cincoPorcento: {
-        names: ['helius5'],
-        porcentagem: 5
+        names: ["helius5"],
+        porcentagem: 5,
       },
       dezPorcento: {
-        names: ['helius10'],
-        porcentagem: 10
+        names: ["helius10"],
+        porcentagem: 10,
       },
       vinteCincoPorcento: {
-        names: ['helius25'],
-        porcentagem: 25
+        names: ["helius25"],
+        porcentagem: 25,
       },
     },
     activeReservationUserList: [],
@@ -125,7 +137,10 @@ export default createStore({
               localStorage.removeItem("usersList");
               localStorage.setItem("usersList", JSON.stringify(state.users));
               sessionStorage.removeItem("loggedUser");
-              sessionStorage.setItem("loggedUser", JSON.stringify(state.loggedUser));
+              sessionStorage.setItem(
+                "loggedUser",
+                JSON.stringify(state.loggedUser)
+              );
             }
           }
         });
@@ -139,12 +154,15 @@ export default createStore({
       if (state.users.length > 0) {
         state.users.forEach((v) => {
           if (v.email == state.loggedUser.email) {
-              v.name = newName;
-              state.loggedUser.name = newName;
-              localStorage.removeItem("usersList");
-              localStorage.setItem("usersList", JSON.stringify(state.users));
-              sessionStorage.removeItem("loggedUser");
-              sessionStorage.setItem("loggedUser", JSON.stringify(state.loggedUser));
+            v.name = newName;
+            state.loggedUser.name = newName;
+            localStorage.removeItem("usersList");
+            localStorage.setItem("usersList", JSON.stringify(state.users));
+            sessionStorage.removeItem("loggedUser");
+            sessionStorage.setItem(
+              "loggedUser",
+              JSON.stringify(state.loggedUser)
+            );
           }
         });
       } else {
@@ -162,7 +180,10 @@ export default createStore({
             localStorage.removeItem("usersList");
             localStorage.setItem("usersList", JSON.stringify(state.users));
             sessionStorage.removeItem("loggedUser");
-            sessionStorage.setItem("loggedUser", JSON.stringify(state.loggedUser));
+            sessionStorage.setItem(
+              "loggedUser",
+              JSON.stringify(state.loggedUser)
+            );
           }
         });
       } else {
