@@ -1,5 +1,5 @@
 import mysql from "mysql2";
-import { constants } from "../constants.js";
+import { constants } from "../constants";
 
 const connection = mysql.createConnection({
     host: constants.IP_SERVER,
