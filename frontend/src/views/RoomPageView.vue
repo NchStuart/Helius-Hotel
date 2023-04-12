@@ -11,22 +11,32 @@
     <button class="btnSkip" @click="skipPage()">Reservar</button>
     <hr />
     <div class="feedback">
-      <h2>Avaliações mais recentes do quarto</h2>
+      <h2>Avaliações</h2>
       <div class="container-comment">
         <p class="textSkip" v-if="showEmptyFeedBackList" @click="skipPage()">
           Este quarto não possui avaliações até o momento. Faça sua reserva
           agora mesmo para aproveitar nossos serviços clicando aqui.
         </p>
-        <ul class="comment-ul" v-if="showFeedBackList">
-          <li class="comment">
-            <div class="column-top">
-              <p class="name-date"></p>
+        <div class="comment-list">
+          <div class="comment" v-for="(list, i) in feedBackList[0]" :key="i">
+            <div class="title-container">
+              <h3 class="comment-title">{{ list.titleComment }}</h3>
+              <div class="stars-container" v-for="n in 5" :key="n">
+                <span :class="{'star': true, 'filled': n <= list.stars}">&#9733;</span>
+              </div>
             </div>
-            <div class="column-bottom">
-              <p class="comment-text"></p>
+            <p class="comment-body">
+              {{ list.textComment }}
+            </p>
+            <div class="comment-meta">
+              <span class="comment-author">Por {{ list.userFullName }}</span>
+              <span class="comment-date">em {{ list.dateComment }}</span>
             </div>
-          </li>
-        </ul>
+          </div>
+        </div>
+        <!-- <button v-if="showFeedBackList" class="btnFullFeedBack">
+          Ver todas as avaliações
+        </button> -->
       </div>
     </div>
   </section>
@@ -56,12 +66,6 @@ export default {
     };
   },
   methods: {
-    insertDataFeedBack() {
-      this.feedBackList.forEach((v) => {
-        console.log(v);
-      });
-      console.log("Inseriu os dados de feedback com sucesso");
-    },
     insertDataText() {
       this.$store.getters.getAccommodations.forEach((v) => {
         if (v.name == this.$route.params.name) {
@@ -150,7 +154,6 @@ export default {
         this.feedBackList.push((await feedbacklist).data);
         this.showEmptyFeedBackList = false;
         this.showFeedBackList = true;
-        this.insertDataFeedBack();
       } catch (err) {
         this.showEmptyFeedBackList = true;
         this.showFeedBackList = false;
@@ -163,6 +166,67 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.title-container {
+  display: flex;
+  align-items: center;
+}
+.container-comment {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.comment-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.comment {
+  margin-bottom: 20px;
+  border: 2px solid #153131;
+  border-radius: 5px;
+  padding: 20px;
+}
+
+.comment-title {
+  margin-top: 0;
+  font-size: 24px;
+  margin-bottom: 15px;
+  margin-right: 20px;
+}
+
+.comment-body {
+  margin-bottom: 15px;
+}
+
+.comment-meta {
+  font-size: 13px;
+}
+
+.comment-author {
+  margin-right: 10px;
+}
+
+.comment-date {
+  color: #999;
+}
+
+.star {
+  font-size: 2rem;
+  color: #ddd;
+  transition: color 0.2s ease-out;
+  user-select: none;
+}
+.filled {
+  color: #ff9f1c;
+}
+.stars-container {
+  font-size: 30px;
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
 section {
   display: flex;
   align-items: center;
@@ -173,6 +237,10 @@ section {
 
 ul {
   list-style: none;
+}
+
+.code {
+  display: none;
 }
 
 .textSkip {
@@ -188,6 +256,22 @@ ul {
   &:hover {
     background-color: #153131;
     color: #fff;
+  }
+}
+
+.btnFullFeedBack {
+  background-color: #cba52a;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  padding: 15px;
+  font-size: 18px;
+  margin-top: 50px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #ecb90f;
+    transition: 0.1s;
   }
 }
 .btnSkip {
@@ -217,6 +301,7 @@ ul {
 
   & h2 {
     text-align: center;
+    margin-bottom: 50px;
   }
 }
 

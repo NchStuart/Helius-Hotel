@@ -14,7 +14,7 @@ export const completeFeedBackData = (acomod, result) => {
                     return;
                 }
                 if (!results[0]) {
-                    result(1, "ID da acomodação invalida");
+                    result(1, "ID da acomodação invalida ou não existem avaliações para está acomodação");
                     return;
                 }
                 result(err, results);
@@ -25,11 +25,19 @@ export const completeFeedBackData = (acomod, result) => {
     }
 };
 
-export const createFullFeedBack = (acomod, user, comment, stars, result) => {
+export const createFullFeedBack = (
+    acomod,
+    user,
+    comment,
+    stars,
+    title,
+    date,
+    result
+) => {
     if (+acomod && user && comment && stars) {
         connection.execute(
-            "INSERT INTO `avaliacao` VALUES (null,?,?,?,?,1)",
-            [user,acomod, comment, stars],
+            "INSERT INTO `avaliacao` VALUES (null,?,?,?,?,?,?,1)",
+            [user, acomod, title, comment, date, stars],
             function (err, results) {
                 if (err) {
                     result(
@@ -38,10 +46,31 @@ export const createFullFeedBack = (acomod, user, comment, stars, result) => {
                     );
                     return;
                 }
-                result(err,results);
+                result(err, results);
             }
         );
     } else {
         result(1, "Dados inseridos de forma incorreta do permitido.");
+    }
+};
+
+export const searchUserforId = (id, result) => {
+    if (id && +id) {
+        connection.execute(
+            "SELECT * FROM `usuarios` WHERE `id_usuario` = ?",
+            [id],
+            function (err, results) {
+                if (err) {
+                    result(
+                        err,
+                        "Algo deu errado ao acessar a lista de usuarios."
+                    );
+                    return;
+                }
+                result(err, results);
+            }
+        );
+    } else {
+        result(1, "ID invalido.");
     }
 };
