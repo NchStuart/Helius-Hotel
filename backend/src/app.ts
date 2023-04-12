@@ -2,7 +2,8 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import bodyParser from "body-parser";
-import { userRoutes } from "./routes/index";
+import { feedbackRoutes } from "./routes/index";
+import { userRoutes } from "./routes/user";
 
 const app = express();
 
@@ -19,7 +20,7 @@ app.use(cors());
 
 app.use(morgan("dev"));
 
-app.use("/heliusapi/v1", userRoutes);
+app.use("/heliusapi/v1", feedbackRoutes, userRoutes);
 
 
 export { app };
