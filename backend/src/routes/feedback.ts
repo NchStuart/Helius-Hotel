@@ -7,4 +7,4 @@ api.get('/feedback/accommodations/:acomodID', feedBackController.getFeedBackList
 
 api.post('/feedback/register', feedBackController.createFeedBack);
 
-export const userRoutes = api;
+export const feedbackRoutes = api;
