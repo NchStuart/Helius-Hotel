@@ -2,8 +2,7 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import bodyParser from "body-parser";
-import { feedbackRoutes } from "./routes/index";
-import { userRoutes } from "./routes/user";
+import { feedbackRoutes,userRoutes } from "./routes/index";
 
 const app = express();
 
