@@ -1,4 +1,4 @@
-import { completeFeedBackData, createFullFeedBack } from "../models/index";
+import { completeFeedBackData, createFullFeedBack } from "../models/index.model";
 
 function getFeedBackList(req, res) {
     const acomodID = req.params.acomodID;

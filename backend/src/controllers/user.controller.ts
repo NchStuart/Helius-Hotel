@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createUser } from "../models/user";
+import { createUser } from "../models/user.model";
 import { User } from "../util/types";
 
 function insertUser(req: Request, res: Response) {
