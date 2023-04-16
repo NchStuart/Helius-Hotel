@@ -9,3 +9,8 @@ export interface User {
     phoneNumber: String;
     status: Number;
 }
+
+export interface UserLogin {
+    email: String,
+    password: String
+}
