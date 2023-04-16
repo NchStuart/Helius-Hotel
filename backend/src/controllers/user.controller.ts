@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { createUser, getUser } from "../models/user.model";
-import { User, UserLogin } from "../util/types";
+import { User, UserLogin, UserAuthenticated } from "../util/types";
 import { constants } from "../constants";
 import axios from "axios";
 import bcrypt from "bcrypt";
@@ -24,8 +24,10 @@ async function authenticateUser(req: Request, res: Response) {
     const hashedUser = await axios.get(`http://${constants.IP_SERVER}:${constants.PORT_SERVER}/heliusapi/v1/user/get-user-by-email/${user.email}`);
 
     if(hashedUser.data) {
-        const authentication = await bcrypt.compare(user.password, hashedUser.data.senha);
-        authentication ? res.status(202).send(authentication) : res.status(401).send(authentication);
+        const authentication: Boolean = await bcrypt.compare(user.password, hashedUser.data.senha);
+        delete hashedUser.data.senha;
+        const resJSON: UserAuthenticated = {...hashedUser.data};
+        authentication ? res.status(202).json(resJSON) : res.status(401).send(authentication);
     } else {
         res.status(400).send("Usuário não encontrado");
     }
