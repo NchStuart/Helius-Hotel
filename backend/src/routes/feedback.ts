@@ -1,5 +1,5 @@
 import express from "express";
-import { feedBackController } from "../controllers/index";
+import { feedBackController } from "../controllers/index.controller";
 
 const api = express.Router();
 
