@@ -1,16 +1,42 @@
-import { completeFeedBackData, createFullFeedBack } from "../models/index.model";
+import { completeFeedBackData, createFullFeedBack, searchUserforId } from "../models/index.model";
+import {convertDataForDefault} from "../util/functions";
 
 function getFeedBackList(req, res) {
     const acomodID = req.params.acomodID;
     if (acomodID && +acomodID) {
-        completeFeedBackData(acomodID, (err, result) => {
+        completeFeedBackData(acomodID, (err, resultFdData) => {
             if (err) {
                 res.status(400).send({
-                    error: result,
+                    error: resultFdData,
                 });
                 console.log(err);
             } else {
-                res.status(200).send(result);
+                let feedBackData = [];
+                resultFdData.forEach(v => {
+                    searchUserforId(v.usuarios_id_usuario, (err, resultUserData) => {
+                        if (err) {
+                            res.status(400).send({
+                                error: resultUserData,
+                            });
+                            console.log(err);
+                        } else {
+                            feedBackData.push({
+                                feedBackID: v.id_avaliacao,
+                                userFullName: resultUserData[0].nome_completo,
+                                acomodID: v.acomodacao_id_acomodacao,
+                                titleComment: v.titulo,
+                                textComment: v.comentario,
+                                dateComment: convertDataForDefault(v.data),
+                                stars: v.estrelas,
+                                status: v.status
+                            });
+                        }
+                    });
+                })
+
+                setTimeout(() => {
+                    res.status(200).send(feedBackData);
+                }, 500);
             }
         });
     } else {
@@ -23,9 +49,9 @@ function getFeedBackList(req, res) {
 function updateFeedBackList(req, res) {}
 
 function createFeedBack(req, res) {
-    const { acomodID, userID, userComment, userStars, reviewTitle, reviewDate } = req.body;
-    if(acomodID && +acomodID && userID && +userID && userComment && userStars && +userStars) {
-        createFullFeedBack(acomodID,userID,userComment,userStars, reviewTitle, reviewDate, (err, result) => {
+    const { acomodID, userID,titleComment, textComment,dataComment, userStars } = req.body;
+    if(acomodID && +acomodID && userID && +userID && titleComment && textComment && dataComment && userStars && +userStars && userStars <= 5 && +userStars) {
+        createFullFeedBack(acomodID,userID,textComment,userStars,titleComment,dataComment,  (err, result) => {
             if (err) {
                 res.status(400).send({
                     error: "Avaliação não foi criada, algo deu errado.",
@@ -35,7 +61,11 @@ function createFeedBack(req, res) {
                 res.status(200).send({msg:"Avaliação criada com sucesso."});
             }
         });
-    };
+    } else {
+        res.status(400).send({
+            error: "Dados de avaliação invalidos",
+        });
+    }
 }
 
 export const feedBackController = {
