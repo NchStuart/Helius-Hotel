@@ -1,14 +1,28 @@
 <template>
   <section>
+    <div
+      class="fade"
+      v-if="fadeShow"
+      @click="
+        fadeShow = false;
+        modalFeedBackController();
+      "
+    ></div>
     <TitleInitialDescription :title="name" :desc="desc" />
 
     <img :src="imageRoom" @click="skipPage()" />
+    <FeedBackModal
+      v-if="showModalFeedBack"
+      @sendFeedBack="(data) => sendFeedBack(data)"
+    />
     <p class="price-p">
       Diaria por pessoa - de <s> R$ </s
       ><s class="priceDesc--s price">{{ descPriceInfo }}</s> Por
       <b class="price--s price">R$ {{ price }}</b>
     </p>
-    <button class="btnSkip" @click="skipPage()">Reservar</button>
+    <div class="feed-back-btn-container">
+      <button class="btnSkip" @click="skipPage()">Reservar</button>
+    </div>
     <hr />
     <div class="feedback">
       <h2>Avaliações</h2>
@@ -18,11 +32,13 @@
           agora mesmo para aproveitar nossos serviços clicando aqui.
         </p>
         <div class="comment-list">
-          <div class="comment" v-for="(list, i) in feedBackList[0]" :key="i">
+          <div class="comment" v-for="(list, i) in feedBackList" :key="i">
             <div class="title-container">
               <h3 class="comment-title">{{ list.titleComment }}</h3>
               <div class="stars-container" v-for="n in 5" :key="n">
-                <span :class="{'star': true, 'filled': n <= list.stars}">&#9733;</span>
+                <span :class="{ star: true, filled: n <= list.stars }"
+                  >&#9733;</span
+                >
               </div>
             </div>
             <p class="comment-body">
@@ -34,6 +50,9 @@
             </div>
           </div>
         </div>
+        <button class="btnFullFeedBack" @click="modalFeedBackController()">
+          Avaliar Quarto
+        </button>
         <!-- <button v-if="showFeedBackList" class="btnFullFeedBack">
           Ver todas as avaliações
         </button> -->
@@ -44,12 +63,12 @@
 
 <script>
 import TitleInitialDescription from "../components/TitleInitialDescription.vue";
-import ModalFeedBack from "../components/accommodations/ModalFeedBack.vue";
+import FeedBackModal from "../components/FeedBackModal.vue";
 import axios from "axios";
 
 export default {
   name: "RoomPage",
-  components: { TitleInitialDescription, ModalFeedBack },
+  components: { TitleInitialDescription, FeedBackModal },
   data() {
     return {
       name: "",
@@ -63,6 +82,8 @@ export default {
       feedBackList: [],
       showFeedBackList: false,
       showEmptyFeedBackList: false,
+      showModalFeedBack: false,
+      fadeShow: false,
     };
   },
   methods: {
@@ -89,6 +110,75 @@ export default {
 
       return `${p} ${p2}`;
     },
+    async sendFeedBack(data) {
+      const idUserQueEstaLogado = 2; // Pegar id do usuario logado quando for finalizada a demanda de usuario
+      const updateListFeedBack = async () => {
+        const feedbacklist = axios.get(
+          `http://localhost:3333/heliusapi/v1/feedback/accommodations/${this.getAcomodID}`
+        );
+        this.feedBackList = (await feedbacklist).data;
+
+      };
+      const createFeedBack = () => {
+        axios.post("http://localhost:3333/heliusapi/v1/feedback/register", {
+          acomodID: `${this.getAcomodID}`,
+          userID: idUserQueEstaLogado,
+          titleComment: `${data.title}`,
+          textComment: `${data.comment}`,
+          dataComment: `${this.getCurrentUserData()}`,
+          userStars: `${data.stars}`,
+        });
+      };
+      if (this.feedBackList.length > 0) {
+        const userAlreadyExist = this.feedBackList.find(
+          (list) => list.userID == idUserQueEstaLogado
+        );
+        if (userAlreadyExist) {
+          alert("Só é permitido uma avaliação por quarto.");
+          return;
+        } else {
+          alert("Avaliação criada com sucesso. 1");
+          this.modalFeedBackController();
+          await createFeedBack();
+          updateListFeedBack();
+          this.showEmptyFeedBackList = false;
+          this.showFeedBackList = true;
+        }
+      } else {
+        alert("Avaliação criada com sucesso. 2");
+        this.modalFeedBackController();
+        await createFeedBack();
+        updateListFeedBack();
+        this.showEmptyFeedBackList = false;
+          this.showFeedBackList = true;
+      }
+    },
+    getCurrentUserData() {
+      const dataAtual = new Date();
+      const dia = dataAtual.getDate();
+      const mes =
+        dataAtual.getMonth() + 1 < 10
+          ? `0${dataAtual.getMonth() + 1}`
+          : dataAtual.getMonth() + 1;
+      const ano = dataAtual.getFullYear();
+      const dataFormatada = `${dia}/${mes}/${ano}`;
+      return dataFormatada;
+    },
+    modalFeedBackController() {
+      this.showModalFeedBack = !this.showModalFeedBack;
+      this.showModalFeedBack
+        ? this.unloadScrollBars()
+        : this.reloadScrollBars();
+      this.showModalFeedBack ? (this.fadeShow = true) : (this.fadeShow = false);
+    },
+    reloadScrollBars() {
+      document.documentElement.style.overflow = "auto";
+      document.body.scroll = "yes";
+    },
+    unloadScrollBars() {
+      document.documentElement.style.overflow = "hidden";
+      document.body.scroll = "no";
+    },
     skipPage() {
       if (this.$store.state.login == false) {
         alert("Você precisa estar logado para fazer uma reserva.");
@@ -98,6 +188,11 @@ export default {
     },
   },
   computed: {
+    getAcomodID() {
+      if (this.$route.params.name == "quarto-simples") return 1;
+      if (this.$route.params.name == "quarto-premium") return 2;
+      if (this.$route.params.name == "quarto-bangalo") return 3;
+    },
     imageRoom() {
       if (this.$route.params.name == "quarto-simples") {
         return this.images[0].src;
@@ -122,36 +217,30 @@ export default {
       }
     },
   },
-  created() {},
   mounted() {
-    let routName;
-    this.$store.getters.getAccommodations.forEach((v) => {
-      if (this.$route.params.name == v.name) routName = v.name;
-    });
-
-    if (
-      routName == "quarto-simples" ||
-      routName == "quarto-premium" ||
-      routName == "quarto-bangalo"
-    ) {
-      this.$router.push(`/acomodacoes/${routName}`);
-    } else {
-      this.$router.push({ name: "acomodacoes" });
-      return;
-    }
-
-    const acomodID = () => {
-      if (this.$route.params.name == "quarto-simples") return 1;
-      if (this.$route.params.name == "quarto-premium") return 2;
-      if (this.$route.params.name == "quarto-bangalo") return 3;
-    };
-
     (async () => {
       try {
         const feedbacklist = axios.get(
-          `http://localhost:3333/heliusapi/v1/feedback/accommodations/${acomodID()}`
+          `http://localhost:3333/heliusapi/v1/feedback/accommodations/${this.getAcomodID}`
         );
-        this.feedBackList.push((await feedbacklist).data);
+        this.feedBackList = (await feedbacklist).data;
+
+        let routName;
+        this.$store.getters.getAccommodations.forEach((v) => {
+          if (this.$route.params.name == v.name) routName = v.name;
+        });
+
+        if (
+          routName == "quarto-simples" ||
+          routName == "quarto-premium" ||
+          routName == "quarto-bangalo"
+        ) {
+          this.$router.push(`/acomodacoes/${routName}`);
+        } else {
+          this.$router.push({ name: "acomodacoes" });
+          return;
+        }
+
         this.showEmptyFeedBackList = false;
         this.showFeedBackList = true;
       } catch (err) {
@@ -166,6 +255,35 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.fade {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  position: fixed;
+  z-index: 14;
+  backdrop-filter: blur(2px);
+  background-color: rgba(0, 0, 0, 0.466);
+}
+
+.feed-back-btn-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  flex-wrap: wrap;
+
+  & button {
+    width: 180px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 20px;
+    white-space: nowrap;
+  }
+}
 .title-container {
   display: flex;
   align-items: center;

@@ -1,5 +1,5 @@
 import { completeFeedBackData, createFullFeedBack, searchUserforId } from "../models/index.model";
-import {convertDataForDefault} from "../util/functions";
+import {convertDataForDefault,convertDataForDB} from "../util/functions";
 
 function getFeedBackList(req, res) {
     const acomodID = req.params.acomodID;
@@ -23,6 +23,7 @@ function getFeedBackList(req, res) {
                             feedBackData.push({
                                 feedBackID: v.id_avaliacao,
                                 userFullName: resultUserData[0].nome_completo,
+                                userID: v.usuarios_id_usuario,
                                 acomodID: v.acomodacao_id_acomodacao,
                                 titleComment: v.titulo,
                                 textComment: v.comentario,
@@ -51,10 +52,10 @@ function updateFeedBackList(req, res) {}
 function createFeedBack(req, res) {
     const { acomodID, userID,titleComment, textComment,dataComment, userStars } = req.body;
     if(acomodID && +acomodID && userID && +userID && titleComment && textComment && dataComment && userStars && +userStars && userStars <= 5 && +userStars) {
-        createFullFeedBack(acomodID,userID,textComment,userStars,titleComment,dataComment,  (err, result) => {
+        createFullFeedBack(acomodID,userID,textComment,userStars,titleComment,convertDataForDB(dataComment),  (err, result) => {
             if (err) {
                 res.status(400).send({
-                    error: "Avaliação não foi criada, algo deu errado.",
+                    error: err,
                 });
                 console.log(err);
             } else {
