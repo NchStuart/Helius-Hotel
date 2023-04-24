@@ -1,10 +1,10 @@
+import axios from "axios";
 import { createStore } from "vuex";
 
 export default createStore({
   strict: true,
   state: {
     login: false,
-    users: [],
     loggedUser: null,
     accommodations: [
       {
@@ -44,28 +44,8 @@ export default createStore({
     getLoginState(state) {
       return state.login;
     },
-    getUsers(state) {
-      return state.users;
-    },
-    getUsersEmails(state) {
-      const emailsList = [];
-
-      state.users.length > 0
-        ? state.users.forEach((user) => {
-            emailsList.push(user.email);
-          })
-        : null;
-
-      return emailsList;
-    },
     getLoggedUser(state) {
       return state.loggedUser;
-    },
-    getUserLevel(state) {
-      if (state.loggedUser) {
-        return state.loggedUser.userLevel;
-      }
-      return 0;
     },
     getReservations(state) {
       return state.reservationsSent;
@@ -108,10 +88,6 @@ export default createStore({
     },
     reservationFormChange(state, payLoad) {
       state.reservationsSent = payLoad;
-    },
-    addUser(state, user) {
-      state.users.push(user);
-      localStorage.setItem("usersList", JSON.stringify(state.users));
     },
     login(state, user) {
       state.login = true;
@@ -201,9 +177,13 @@ export default createStore({
       context.commit("reservationFormChange", payLoad);
     },
     addUser(context, payload) {
-      context.commit("addUser", payload);
+      console.log(payload)
+      axios
+        .post("http://localhost:8080/heliusapi/v1/user/register", payload)
+        .then((response) => console.log(response))
+        .catch((error) => console.log(error));
     },
-    login(context, payload) {
+    login(context, payload) { 
       context.commit("login", payload);
     },
     logout(context) {

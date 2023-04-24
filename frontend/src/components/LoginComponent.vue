@@ -23,6 +23,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name:'LoginComponent',
   data() {
@@ -38,28 +40,34 @@ export default {
       this.password = ""
       this.showModal = false;
     },
-    tryLogin() {
-      // verify if user exists
-      const users = this.$store.getters.getUsers
-      let checkUser = null
-
+    async tryLogin() {
       if (this.loginState) { alert("Você já está logado"); return }
 
-      users.forEach(user => {
-        user.email === this.email ? checkUser = user : null
+      const loginAuth = {}
+
+      await axios.post("http://localhost:8080/heliusapi/v1/user/authenticate",
+      {
+        email: this.email,
+        password: this.password
+      })
+      .then(response => loginAuth.data = response.data)
+      .catch(error => {
+        alert("Usuário ou senha inválidos!")
       })
 
-      if (checkUser) {
-        checkUser.password === this.password ?
-        (this.$store.dispatch("login", checkUser),
-        this.showModal = false,
-        this.email = "",
-        this.password = "",
-        alert("Login realizado com sucesso!"))
-        : alert("Senha incorreta")
-      } else {
-        alert("E-mail incorreto!")
-      }
+      console.log(loginAuth)
+
+      // if (checkUser) {
+      //   checkUser.password === this.password ?
+      //   (this.$store.dispatch("login", checkUser),
+      //   this.showModal = false,
+      //   this.email = "",
+      //   this.password = "",
+      //   alert("Login realizado com sucesso!"))
+      //   : alert("Senha incorreta")
+      // } else {
+      //   alert("E-mail incorreto!")
+      // }
     }
   },
   computed: {
