@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { insertUser, getUser } from "../models/user.model";
+import { insertUser, getUser, getUserforId } from "../models/index.model";
 import { User, UserLogin } from "../util/types";
 import { constants } from "../constants";
 import axios from "axios";
@@ -44,8 +44,17 @@ function getUserByEmail(req: Request, res: Response) {
     })
 }
 
+function getUserById(req: Request, res: Response) {
+    const {id} = req.params
+    getUserforId(id, (err: Error, result: String) => {
+        err ? res.status(400).send(`Erro ao retornar usuário: ${err}`) : null;
+        res.status(200).json(result);
+    });
+}
+
 export const userController = {
     createUser,
     authenticateUser,
-    getUserByEmail
+    getUserByEmail,
+    getUserById
 }

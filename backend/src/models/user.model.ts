@@ -19,3 +19,24 @@ export function getUser(email: String, res: Function) {
         }
     );
 }
+
+export const getUserforId = (id, result) => {
+    if (id && +id) {
+        connection.execute(
+            "SELECT * FROM `usuarios` WHERE `id_usuario` = ?",
+            [id],
+            async function (err, results) {
+                if (err) {
+                    result(
+                        err,
+                        "Algo deu errado ao acessar a lista de usuarios."
+                    );
+                    return;
+                }
+                await result(null, results);
+            }
+        );
+    } else {
+        result(1, "ID invalido.");
+    }
+};
