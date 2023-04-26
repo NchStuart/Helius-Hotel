@@ -43,31 +43,7 @@ export default {
     async tryLogin() {
       if (this.loginState) { alert("Você já está logado"); return }
 
-      const loginAuth = {}
-
-      await axios.post("http://localhost:8080/heliusapi/v1/user/authenticate",
-      {
-        email: this.email,
-        password: this.password
-      })
-      .then(response => loginAuth.data = response.data)
-      .catch(error => {
-        alert("Usuário ou senha inválidos!")
-      })
-
-      console.log(loginAuth)
-
-      // if (checkUser) {
-      //   checkUser.password === this.password ?
-      //   (this.$store.dispatch("login", checkUser),
-      //   this.showModal = false,
-      //   this.email = "",
-      //   this.password = "",
-      //   alert("Login realizado com sucesso!"))
-      //   : alert("Senha incorreta")
-      // } else {
-      //   alert("E-mail incorreto!")
-      // }
+      this.$store.dispatch("login", {email: this.email, password: this.password})
     }
   },
   computed: {

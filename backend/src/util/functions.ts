@@ -11,3 +11,9 @@ export function convertDataForDefault(date) {
 
     return string;
 }
+
+export function convertDataForDB(date) {
+    const arrayData = date.split('/');
+    const dateFormat = `${arrayData[2]}-${arrayData[1].padStart(2, '0')}-${arrayData[0].padStart(2, '0')}`;
+    return dateFormat;
+}

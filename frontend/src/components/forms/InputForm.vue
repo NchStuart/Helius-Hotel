@@ -27,8 +27,8 @@ export default {
     },
     patternTxt: {
       type: String
-    }
-  },
+    },
+  }
 };
 </script>
 
@@ -37,9 +37,10 @@ input {
   margin-bottom: 40px;
   height: 60px;
   width: 280px;
-  margin-top: 5px;
+  margin-top: 10px;
   font-size: 17px;
   padding: 10px;
+  border: 1px solid #000;
 }
 
 label {

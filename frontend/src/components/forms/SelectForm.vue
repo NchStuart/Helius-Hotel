@@ -39,6 +39,7 @@ select {
   margin-top: 5px;
   font-size: 17px;
   padding: 10px;
+  border: 1px solid #000;
 }
 
 label {

@@ -7,17 +7,10 @@ export const completeFeedBackData = (acomod, result) => {
             [acomod],
             function (err, results) {
                 if (err) {
-                    result(
-                        err,
-                        "Algo deu errado ao consultar esta tabela no banco de dados."
-                    );
+                    result(err, "ID da acomodação invalida.");
                     return;
                 }
-                if (!results[0]) {
-                    result(1, "ID da acomodação invalida ou não existem avaliações para está acomodação");
-                    return;
-                }
-                result(err, results);
+                results.length > 0 ? result(err, results) : result(1, "Não existem avaliações para está acomodação");
             }
         );
     } else {
@@ -51,26 +44,5 @@ export const createFullFeedBack = (
         );
     } else {
         result(1, "Dados inseridos de forma incorreta do permitido.");
-    }
-};
-
-export const searchUserforId = (id, result) => {
-    if (id && +id) {
-        connection.execute(
-            "SELECT * FROM `usuarios` WHERE `id_usuario` = ?",
-            [id],
-            function (err, results) {
-                if (err) {
-                    result(
-                        err,
-                        "Algo deu errado ao acessar a lista de usuarios."
-                    );
-                    return;
-                }
-                result(err, results);
-            }
-        );
-    } else {
-        result(1, "ID invalido.");
     }
 };
