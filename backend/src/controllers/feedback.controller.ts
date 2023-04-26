@@ -1,43 +1,50 @@
-import { completeFeedBackData, createFullFeedBack, searchUserforId } from "../models/index.model";
-import {convertDataForDefault,convertDataForDB} from "../util/functions";
+import {
+    completeFeedBackData,
+    createFullFeedBack,
+    getUserforId,
+} from "../models/index.model";
+import { convertDataForDefault, convertDataForDB } from "../util/functions";
+import axios from "axios";
 
-function getFeedBackList(req, res) {
+async function getFeedBackList(req, res) {
     const acomodID = req.params.acomodID;
+    const getUserforIdAsync = (id) =>
+        new Promise((resolve, reject) =>
+            getUserforId(id, (err, resultUserData) =>
+                err ? reject(err) : resolve(resultUserData)
+            )
+        );
+    const user = async (id) =>
+        await getUserforIdAsync(id).catch((err) => {
+            console.log(err);
+            res.status(400).send("Erro ao encontrar o usuario");
+        });
     if (acomodID && +acomodID) {
-        completeFeedBackData(acomodID, (err, resultFdData) => {
+        completeFeedBackData(acomodID, async (err, resultFdData) => {
             if (err) {
+                console.log(err);
                 res.status(400).send({
                     error: resultFdData,
                 });
-                console.log(err);
             } else {
-                let feedBackData = [];
-                resultFdData.forEach(v => {
-                    searchUserforId(v.usuarios_id_usuario, (err, resultUserData) => {
-                        if (err) {
-                            res.status(400).send({
-                                error: resultUserData,
-                            });
-                            console.log(err);
-                        } else {
-                            feedBackData.push({
-                                feedBackID: v.id_avaliacao,
-                                userFullName: resultUserData[0].nome_completo,
-                                userID: v.usuarios_id_usuario,
-                                acomodID: v.acomodacao_id_acomodacao,
-                                titleComment: v.titulo,
-                                textComment: v.comentario,
-                                dateComment: convertDataForDefault(v.data),
-                                stars: v.estrelas,
-                                status: v.status
-                            });
-                        }
-                    });
-                })
+                console.log(resultFdData)
+                const feedBackData = await Promise.all(
+                    resultFdData.map(async (feedback) => {
+                        return {
+                            userID: feedback.usuarios_id_usuario,
+                            userFullName: (
+                                await user(feedback.usuarios_id_usuario)
+                            )[0].nome_completo,
+                            titleComment: feedback.titulo,
+                            textComment: feedback.comentario,
+                            dateComment: convertDataForDefault(feedback.data),
+                            stars: feedback.estrelas,
+                            status: feedback.status,
+                        };
+                    })
+                );
 
-                setTimeout(() => {
-                    res.status(200).send(feedBackData);
-                }, 500);
+                res.status(200).send(feedBackData);
             }
         });
     } else {
@@ -50,18 +57,47 @@ function getFeedBackList(req, res) {
 function updateFeedBackList(req, res) {}
 
 function createFeedBack(req, res) {
-    const { acomodID, userID,titleComment, textComment,dataComment, userStars } = req.body;
-    if(acomodID && +acomodID && userID && +userID && titleComment && textComment && dataComment && userStars && +userStars && userStars <= 5 && +userStars) {
-        createFullFeedBack(acomodID,userID,textComment,userStars,titleComment,convertDataForDB(dataComment),  (err, result) => {
-            if (err) {
-                res.status(400).send({
-                    error: err,
-                });
-                console.log(err);
-            } else {
-                res.status(200).send({msg:"Avaliação criada com sucesso."});
+    const {
+        acomodID,
+        userID,
+        titleComment,
+        textComment,
+        dataComment,
+        userStars,
+    } = req.body;
+    if (
+        acomodID &&
+        +acomodID &&
+        userID &&
+        +userID &&
+        titleComment &&
+        textComment &&
+        dataComment &&
+        userStars &&
+        +userStars &&
+        userStars <= 5 &&
+        +userStars
+    ) {
+        createFullFeedBack(
+            acomodID,
+            userID,
+            textComment,
+            userStars,
+            titleComment,
+            convertDataForDB(dataComment),
+            (err, result) => {
+                if (err) {
+                    res.status(400).send({
+                        error: err,
+                    });
+                    console.log(err);
+                } else {
+                    res.status(200).send({
+                        msg: "Avaliação criada com sucesso.",
+                    });
+                }
             }
-        });
+        );
     } else {
         res.status(400).send({
             error: "Dados de avaliação invalidos",

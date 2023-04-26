@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <h2>Queremos te ouvir!</h2>
-    <hr />
     <form class="container-form">
+      <button class="exit" @click="$emit('closeModal')">&#x2715;</button>
       <InputForm
         labelTitle="Titulo"
         placeHolder="Digite o titulo da sua avaliação"
@@ -23,12 +23,7 @@
           </div>
         </div>
       </div>
-      <button
-        class="btn-send"
-        @click.prevent="sendFeedBack()"
-      >
-        Enviar
-      </button>
+      <button class="btn-send" @click.prevent="sendFeedBack()">Enviar</button>
     </form>
   </div>
 </template>
@@ -43,30 +38,41 @@ export default {
   components: { InputForm, TextArea },
   data() {
     return {
-      title: '',
-      comment: '',
+      title: "",
+      comment: "",
       rating: 0,
     };
   },
-  emits: ["sendFeedBack"],
+  emits: ["sendFeedBack", "closeModal"],
   methods: {
     setRating(rating) {
       this.rating = rating;
     },
     sendFeedBack() {
-      const title = document.querySelector('.title').value;
-      const comment = document.querySelector('.comment').value;
+      const title = document.querySelector(".title").value;
+      const comment = document.querySelector(".comment").value;
       if (title && comment && this.rating) {
-        this.$emit('sendFeedBack', {title: title,comment: comment,stars: this.rating})
+        this.$emit("sendFeedBack", {
+          title: title,
+          comment: comment,
+          stars: this.rating,
+        });
       } else {
-        alert('As informações não podem estar vazias ou incompletas.')
+        alert("As informações não podem estar vazias ou incompletas.");
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style lang="scss" scoped>
+button {
+  outline: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
 .container {
   display: flex;
   justify-content: center;
@@ -124,18 +130,23 @@ export default {
   align-items: center;
   background-color: #cba52a;
   color: #fff;
-  border: none;
   border-radius: 30px;
   padding: 15px;
   width: 120px;
   height: 50px;
   margin-top: 30px;
-  cursor: pointer;
   font-weight: bold;
 
   &:hover {
     background-color: #ecb90f;
     transition: 0.1s;
   }
+}
+
+.exit {
+  position: absolute;
+  font-size: 1.5rem;
+  top: 10px;
+  right: 15px;
 }
 </style>

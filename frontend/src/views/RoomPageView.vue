@@ -14,6 +14,7 @@
     <FeedBackModal
       v-if="showModalFeedBack"
       @sendFeedBack="(data) => sendFeedBack(data)"
+      @closeModal="modalFeedBackController()"
     />
     <p class="price-p">
       Diaria por pessoa - de <s> R$ </s
@@ -87,6 +88,23 @@ export default {
     };
   },
   methods: {
+    getFeedBackData() {
+      axios
+        .get(
+          `http://localhost:3333/heliusapi/v1/feedback/accommodations/${this.getAcomodID()}`
+        )
+        .then((res) => {
+          console.log(res.data)
+          this.feedBackList = res.data;
+          this.showEmptyFeedBackList = false;
+          this.showFeedBackList = true;
+        })
+        .catch((err) => {
+          console.log(err);
+          this.showFeedBackList = false;
+          this.showEmptyFeedBackList = true;
+        });
+    },
     insertDataText() {
       this.$store.getters.getAccommodations.forEach((v) => {
         if (v.name == this.$route.params.name) {
@@ -111,22 +129,17 @@ export default {
       return `${p} ${p2}`;
     },
     async sendFeedBack(data) {
-      const idUserQueEstaLogado = 2; // Pegar id do usuario logado quando for finalizada a demanda de usuario
-      const updateListFeedBack = async () => {
-        const feedbacklist = axios.get(
-          `http://localhost:3333/heliusapi/v1/feedback/accommodations/${this.getAcomodID}`
-        );
-        this.feedBackList = (await feedbacklist).data;
+      const idUserQueEstaLogado = 1; // Pegar id do usuario logado quando for finalizada a demanda de usuario.
 
-      };
       const createFeedBack = () => {
         axios.post("http://localhost:3333/heliusapi/v1/feedback/register", {
-          acomodID: `${this.getAcomodID}`,
+          acomodID: `${this.getAcomodID()}`,
           userID: idUserQueEstaLogado,
           titleComment: `${data.title}`,
           textComment: `${data.comment}`,
           dataComment: `${this.getCurrentUserData()}`,
           userStars: `${data.stars}`,
+          status: 1,
         });
       };
       if (this.feedBackList.length > 0) {
@@ -137,20 +150,24 @@ export default {
           alert("Só é permitido uma avaliação por quarto.");
           return;
         } else {
-          alert("Avaliação criada com sucesso. 1");
           this.modalFeedBackController();
           await createFeedBack();
-          updateListFeedBack();
           this.showEmptyFeedBackList = false;
           this.showFeedBackList = true;
+          setTimeout(() => {
+            this.getFeedBackData();
+          }, 200);
+          alert("Avaliação criada com sucesso. 1");
         }
       } else {
-        alert("Avaliação criada com sucesso. 2");
         this.modalFeedBackController();
         await createFeedBack();
-        updateListFeedBack();
         this.showEmptyFeedBackList = false;
-          this.showFeedBackList = true;
+        this.showFeedBackList = true;
+        setTimeout(() => {
+            this.getFeedBackData();
+          }, 200);
+        alert("Avaliação criada com sucesso. 2");
       }
     },
     getCurrentUserData() {
@@ -186,13 +203,16 @@ export default {
         this.$router.push("/reservas");
       }
     },
+    getAcomodID() {
+      let acomodID;
+      if (this.$route.params.name == "quarto-simples") acomodID = 1;
+      if (this.$route.params.name == "quarto-premium") acomodID = 2;
+      if (this.$route.params.name == "quarto-bangalo") acomodID = 3;
+
+      return acomodID;
+    },
   },
   computed: {
-    getAcomodID() {
-      if (this.$route.params.name == "quarto-simples") return 1;
-      if (this.$route.params.name == "quarto-premium") return 2;
-      if (this.$route.params.name == "quarto-bangalo") return 3;
-    },
     imageRoom() {
       if (this.$route.params.name == "quarto-simples") {
         return this.images[0].src;
@@ -218,37 +238,23 @@ export default {
     },
   },
   mounted() {
-    (async () => {
-      try {
-        const feedbacklist = axios.get(
-          `http://localhost:3333/heliusapi/v1/feedback/accommodations/${this.getAcomodID}`
-        );
-        this.feedBackList = (await feedbacklist).data;
+    this.getFeedBackData();
 
-        let routName;
-        this.$store.getters.getAccommodations.forEach((v) => {
-          if (this.$route.params.name == v.name) routName = v.name;
-        });
+    let routName;
+    this.$store.getters.getAccommodations.forEach((v) => {
+      if (this.$route.params.name == v.name) routName = v.name;
+    });
 
-        if (
-          routName == "quarto-simples" ||
-          routName == "quarto-premium" ||
-          routName == "quarto-bangalo"
-        ) {
-          this.$router.push(`/acomodacoes/${routName}`);
-        } else {
-          this.$router.push({ name: "acomodacoes" });
-          return;
-        }
-
-        this.showEmptyFeedBackList = false;
-        this.showFeedBackList = true;
-      } catch (err) {
-        this.showEmptyFeedBackList = true;
-        this.showFeedBackList = false;
-        return;
-      }
-    })();
+    if (
+      routName == "quarto-simples" ||
+      routName == "quarto-premium" ||
+      routName == "quarto-bangalo"
+    ) {
+      this.$router.push(`/acomodacoes/${routName}`);
+    } else {
+      this.$router.push({ name: "acomodacoes" });
+      return;
+    }
     this.insertDataText();
   },
 };
