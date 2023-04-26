@@ -37,7 +37,7 @@
       <div class="userArea">
         <LoginComponent v-if="!loginState" class="userArea__item" />
         <SignUpComponent v-if="!loginState" class="userArea__item" />
-        <span v-if="loginState" style="cursor: pointer" class="userArea_item" @click="$router.push(`/perfil/${this.$store.state.loggedUser.email}`)">Olá {{ loggedUser.name }}!</span>
+        <span v-if="loginState" style="cursor: pointer" class="userArea_item" @click="$router.push(`/perfil/${this.$store.state.loggedUser.email}`)">Olá {{ loggedUser.nome_completo }}!</span>
         <a href="" v-if="loginState" @click="logout" class="userArea_item icon">
           <font-awesome-icon icon="fa-solid fa-arrow-right-from-bracket" />
         </a>
