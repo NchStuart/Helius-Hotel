@@ -92,6 +92,8 @@ export default createStore({
     login(state, user) {
       state.login = true;
       state.loggedUser = user;
+      sessionStorage.setItem("loginState", JSON.stringify(state.login));
+      sessionStorage.setItem("loggedUser", JSON.stringify(state.loggedUser));
     },
     logout(state) {
       state.login = false;
@@ -177,28 +179,12 @@ export default createStore({
     addUser(context, payload) {
       console.log(payload)
       axios
-        .post("http://localhost:8080/heliusapi/v1/user/register", payload)
+        .post("http://localhost:3333/heliusapi/v1/user/register", payload)
         .then((response) => console.log(response))
         .catch((error) => console.log(error));
     },
-    async login({commit, state}, payload) { 
-      const loginAuth = {}
-
-      await axios.post("http://localhost:8080/heliusapi/v1/user/authenticate",
-      {
-        email: payload.email,
-        password: payload.password
-      })
-      .then(response => loginAuth.data = response.data)
-      .catch(error => {
-        alert("Usuário ou senha inválidos!")
-      })
-
-      if(loginAuth.data) {
-        commit("login", loginAuth.data)
-        sessionStorage.setItem("loginState", JSON.stringify(state.login));
-        sessionStorage.setItem("loggedUser", JSON.stringify(state.loggedUser));
-      }
+    login(context, payload) { 
+      context.commit("login", payload);
     },
     logout(context) {
       context.commit("logout");

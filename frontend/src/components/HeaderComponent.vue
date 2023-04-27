@@ -13,20 +13,28 @@
             <li class="selected" @click="$router.push('/')">
               <a>Home</a>
             </li>
-            <li @click="$router.push({name: 'sobre'})">
+            <li @click="$router.push({ name: 'sobre' })">
               <a>O Hotel</a>
             </li>
-            <li @click="$router.push({name: 'acomodacoes'})">
+            <li @click="$router.push({ name: 'acomodacoes' })">
               <a>Acomodações</a>
             </li>
-            <li v-if="$store.state.login" @click="$router.push({name: 'reservas'})">
+            <li
+              v-if="$store.state.login"
+              @click="$router.push({ name: 'reservas' })"
+            >
               <a>Reservas</a>
             </li>
-            <li @click="$router.push({name: 'contato'})">
+            <li @click="$router.push({ name: 'contato' })">
               <a>Contato</a>
             </li>
-            <li v-if="$store.state.login" @click="$router.push(`/perfil/${this.$store.state.loggedUser.email}`)">
-             <a>Minha conta</a>
+            <li
+              v-if="$store.state.login"
+              @click="
+                $router.push(`/perfil/${this.$store.state.loggedUser.email}`)
+              "
+            >
+              <a>Minha conta</a>
             </li>
             <li v-if="userLevel > 0" @click="$router.push('/contato')">
               <a>Admin</a>
@@ -37,13 +45,22 @@
       <div class="userArea">
         <LoginComponent v-if="!loginState" class="userArea__item" />
         <SignUpComponent v-if="!loginState" class="userArea__item" />
-        <span v-if="loginState" style="cursor: pointer" class="userArea_item" @click="$router.push(`/perfil/${this.$store.state.loggedUser.email}`)">Olá {{ loggedUser.nome_completo }}!</span>
+        <span
+          v-if="loginState"
+          style="cursor: pointer"
+          class="userArea_item"
+          @click="$router.push(`/perfil/${this.$store.state.loggedUser.email}`)"
+          >Olá {{ loggedUser.nome_completo }}!</span
+        >
         <a href="" v-if="loginState" @click="logout" class="userArea_item icon">
           <font-awesome-icon icon="fa-solid fa-arrow-right-from-bracket" />
         </a>
       </div>
     </div>
-    <div class="trademarkArea" :style="{ backgroundImage: 'url(' + imageUrl + ')' }">
+    <div
+      class="trademarkArea"
+      :style="{ backgroundImage: 'url(' + imageUrl + ')' }"
+    >
       <div id="blackBackground">
         <h1 class="logo">Helius Hotel</h1>
         <h2>A sua estadia em primeiro lugar</h2>
@@ -51,25 +68,68 @@
     </div>
     <nav class="headerMenu">
       <ul>
-        <li class="selected" @click="$router.push('/')">
+        <li :class="{ active: $route.path === '/' }" @click="$router.push('/')">
           <a>Home</a>
         </li>
-        <li @click="$router.push({name: 'sobre'})">
+        <li
+          :class="{ active: $route.path === '/sobre' }"
+          @click="$router.push({ name: 'sobre' })"
+        >
           <a>O Hotel</a>
         </li>
-        <li @click="$router.push({name: 'acomodacoes'})">
+        <li
+          :class="
+            {
+              active: $route.path === '/acomodacoes',
+            } || {
+              active: $route.path === '/acomodacoes/:name',
+            }
+          "
+          @click="$router.push({ name: 'acomodacoes' })"
+        >
           <a>Acomodações</a>
         </li>
-        <li v-if="$store.state.login" @click="$router.push({name: 'reservas'})">
+        <li
+          v-if="$store.state.login"
+          :class="
+            {
+              active: $route.path === '/reservas',
+            } || { active: $route.path === '/reservas/acomodacoes' } || {
+              active: $route.path === '/reservas/pedido-finalizado',
+            }
+          "
+          @click="$router.push({ name: 'reservas' })"
+        >
           <p>Reservas</p>
         </li>
-        <li @click="$router.push({name: 'contato'})">
+        <li
+          :class="{ active: $route.path === '/contato' }"
+          @click="$router.push({ name: 'contato' })"
+        >
           <a>Contato</a>
         </li>
-        <li v-if="$store.state.login" @click="$router.push(`/perfil/${this.$store.state.loggedUser.email}`)">
+        <li
+          v-if="$store.state.login"
+          :class="
+            {
+              active: $route.path === '/perfil/:email',
+            } || { active: $route.path === '/perfil/:email/minhas-reservas' }
+          "
+          @click="$router.push(`/perfil/${this.$store.state.loggedUser.email}`)"
+        >
           <a>Minha conta</a>
         </li>
-        <li v-if="userLevel > 0" @click="$router.push('/admin')">
+        <li
+          v-if="userLevel > 0"
+          :class="
+            {
+              active: $route.path === '/admin',
+            } || { active: $route.path === '/admin/view-users' } || {
+              active: $route.path === '/admin/view-reservations',
+            }
+          "
+          @click="$router.push('/admin')"
+        >
           <a>Admin</a>
         </li>
       </ul>
@@ -160,7 +220,7 @@ header {
     height: 1.8rem;
 
     &__item {
-      margin: 0 .6rem;
+      margin: 0 0.6rem;
     }
 
     .icon {
@@ -260,7 +320,7 @@ header {
   }
 }
 
-.selected {
+.active {
   border-bottom: 0.2rem solid v.$mainColorBlack;
 }
 
@@ -309,13 +369,9 @@ export default {
   name: "HeaderComponent",
   data() {
     return {
-      images: [
-        "hotel01.jpg",
-        "hotel02.jpg",
-        "piscina02.jpg",
-      ],
-      imageUrl: ""
-    }
+      images: ["hotel01.jpg", "hotel02.jpg", "piscina02.jpg"],
+      imageUrl: "",
+    };
   },
   components: {
     LoginComponent,
@@ -323,23 +379,23 @@ export default {
   },
   computed: {
     loginState() {
-      return this.$store.getters.getLoginState
+      return this.$store.getters.getLoginState;
     },
     loggedUser() {
-      return this.$store.getters.getLoggedUser
+      return this.$store.getters.getLoggedUser;
     },
     userLevel() {
       return this.$store.getters.getUserLevel;
-    }
+    },
   },
   methods: {
     logout() {
-      this.$store.dispatch("logout")
-    }
+      this.$store.dispatch("logout");
+    },
   },
   mounted() {
     const randomIndex = Math.floor(Math.random() * this.images.length);
     this.imageUrl = require(`@/assets/images/${this.images[randomIndex]}`);
-  }
+  },
 };
 </script>

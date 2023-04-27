@@ -1,5 +1,3 @@
-CREATE DATABASE  IF NOT EXISTS `heliushotel` /*!40100 DEFAULT CHARACTER SET utf8mb3 */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `heliushotel`;
 -- MySQL dump 10.13  Distrib 8.0.32, for Win64 (x86_64)
 --
 -- Host: 127.0.0.1    Database: heliushotel
@@ -55,11 +53,11 @@ DROP TABLE IF EXISTS `acomodacao_tipo`;
 CREATE TABLE `acomodacao_tipo` (
   `id_acomodacao_tipo` int NOT NULL AUTO_INCREMENT,
   `nome` varchar(45) NOT NULL,
-  `acomodacao_id_acomodacao` int NOT NULL,
+  `acomodacao_id_acomodacao` int unsigned NOT NULL,
   PRIMARY KEY (`id_acomodacao_tipo`),
-  KEY `fk_acomodacao_tipo_acomodacao1_idx` (`acomodacao_id_acomodacao`),
-  CONSTRAINT `fk_acomodacao_tipo_acomodacao1` FOREIGN KEY (`acomodacao_id_acomodacao`) REFERENCES `acomodacao` (`id_acomodacao`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+  UNIQUE KEY `acomodacao_id_acomodacao_UNIQUE` (`acomodacao_id_acomodacao`),
+  KEY `fk_acomodacao_tipo_acomodacao1_idx` (`acomodacao_id_acomodacao`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -68,6 +66,7 @@ CREATE TABLE `acomodacao_tipo` (
 
 LOCK TABLES `acomodacao_tipo` WRITE;
 /*!40000 ALTER TABLE `acomodacao_tipo` DISABLE KEYS */;
+INSERT INTO `acomodacao_tipo` VALUES (1,'simples',1),(2,'premium',2),(3,'bangalo',3);
 /*!40000 ALTER TABLE `acomodacao_tipo` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -93,7 +92,7 @@ CREATE TABLE `avaliacao` (
   KEY `fk_usuario_id_usuario` (`usuarios_id_usuario`),
   CONSTRAINT `fk_usuario_id_acomodacao` FOREIGN KEY (`acomodacao_id_acomodacao`) REFERENCES `acomodacao` (`id_acomodacao`),
   CONSTRAINT `fk_usuario_id_usuario` FOREIGN KEY (`usuarios_id_usuario`) REFERENCES `usuarios` (`id_usuario`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=89 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -102,7 +101,6 @@ CREATE TABLE `avaliacao` (
 
 LOCK TABLES `avaliacao` WRITE;
 /*!40000 ALTER TABLE `avaliacao` DISABLE KEYS */;
-INSERT INTO `avaliacao` VALUES (1,2,1,'Quarto muito bom','Quarto da hora, serviços rapidos e de qualidade, recomento mt','2023-04-11',5,1),(3,1,1,'Atendimento muito bom!!','Achei razoavel mas tem serviços muito efetivos e de otima qualidade, atendimento primeira linha','2023-04-08',3,1),(4,1,1,'Atendimento muito bom!!','Achei razoavel mas tem serviços muito efetivos e de otima qualidade, atendimento primeira linha','2023-04-08',3,1),(6,3,3,'Tudo foi perfeito <3','Quarto perfeito, otima qualidade e serviço rapido e efetivo, A Rosana foi uma atendente otima! :D','2023-04-12',5,1);
 /*!40000 ALTER TABLE `avaliacao` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -305,16 +303,19 @@ DROP TABLE IF EXISTS `usuarios`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `usuarios` (
   `id_usuario` int NOT NULL AUTO_INCREMENT,
+  `nome_usuario` varchar(255) NOT NULL,
   `nome_completo` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `senha` varchar(255) NOT NULL,
   `nivel` int NOT NULL,
   `telefone` varchar(15) NOT NULL,
+  `id_reserva` int NOT NULL,
   `status` tinyint NOT NULL,
   PRIMARY KEY (`id_usuario`),
   UNIQUE KEY `idusuarios_UNIQUE` (`id_usuario`),
-  UNIQUE KEY `email_UNIQUE` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3;
+  UNIQUE KEY `email_UNIQUE` (`email`),
+  UNIQUE KEY `nome_usuario_UNIQUE` (`nome_usuario`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -323,7 +324,7 @@ CREATE TABLE `usuarios` (
 
 LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
-INSERT INTO `usuarios` VALUES (1,'Nicholas Stuart Almeida','glaussviana@gmail.com','1244',1,'61992610272',1),(2,'Alerrandro Gabriel Augusto','alerrandro@gmail.com','2222',1,'61945934593',1),(3,'Patricia Queiroz','patricia@gmail.com','2131123',1,'61959435345',1);
+INSERT INTO `usuarios` VALUES (4,'fgdfgdfg','dfgdfgdfg','glaussviana@gmail.com','$2b$10$0/QaBRIcQJJkkDV6sR6PKu2Se989XiaSiEgDrrDXHqsOuSMgJ4O1K',0,'213123123',0,0);
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -336,4 +337,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-04-12 19:28:03
+-- Dump completed on 2023-04-27 15:20:34

@@ -51,9 +51,9 @@
             </div>
           </div>
         </div>
-        <button class="btnFullFeedBack" @click="modalFeedBackController()">
+        <!-- <button class="btnFullFeedBack" @click="modalFeedBackController()">
           Avaliar Quarto
-        </button>
+        </button> -->
         <!-- <button v-if="showFeedBackList" class="btnFullFeedBack">
           Ver todas as avaliações
         </button> -->
@@ -157,7 +157,7 @@ export default {
           setTimeout(() => {
             this.getFeedBackData();
           }, 200);
-          alert("Avaliação criada com sucesso. 1");
+          alert("Avaliação criada com sucesso.");
         }
       } else {
         this.modalFeedBackController();
@@ -167,7 +167,7 @@ export default {
         setTimeout(() => {
             this.getFeedBackData();
           }, 200);
-        alert("Avaliação criada com sucesso. 2");
+        alert("Avaliação criada com sucesso.");
       }
     },
     getCurrentUserData() {
