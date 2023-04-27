@@ -10,17 +10,17 @@ export default createStore({
       {
         name: "quarto-simples",
         desc: "Nossos quartos simples oferecem a melhor opção custo/benefício se você pretende aliar bem estar e economia.",
-        price: "99,90"
+        price: "99,90",
       },
       {
         name: "quarto-premium",
         desc: "Quartos premium com todas as comodidades essenciais para o seu conforto. Todos os nossos apartamentos luxo são de frente e proporcionam aos nossos hóspedes uma vista maravilhosa, além de um espaço reservado especialmente para aqueles que vem a trabalho e precisam utilizar seu notebook.",
-        price: "199,90"
+        price: "199,90",
       },
       {
         name: "quarto-bangalo",
         desc: "Nossos quartos Bangalô são exatamente como o nome já diz: muito mais conforto e requinte para nossos hóspedes. Alguns de nossos quartos bangalô são equipados com sauna.",
-        price: "299,90"
+        price: "299,90",
       },
     ],
     cupomList: {
@@ -52,6 +52,15 @@ export default createStore({
     },
     getAccommodations(state) {
       return state.accommodations;
+    },
+    getUserForEmail: (state) => (email) => {
+      console.log(email);
+      return axios
+      .get(`http://localhost:3333/heliusapi/v1/user/get-user-by-email/${email}`)
+      .then((response) => response.data)
+      .catch((error) => {
+        errorCode: 1, error;
+      });
     },
   },
   mutations: {
@@ -177,13 +186,13 @@ export default createStore({
       context.commit("reservationFormChange", payLoad);
     },
     addUser(context, payload) {
-      console.log(payload)
+      console.log(payload);
       axios
         .post("http://localhost:3333/heliusapi/v1/user/register", payload)
         .then((response) => console.log(response))
         .catch((error) => console.log(error));
     },
-    login(context, payload) { 
+    login(context, payload) {
       context.commit("login", payload);
     },
     logout(context) {

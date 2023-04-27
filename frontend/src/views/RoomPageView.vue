@@ -51,9 +51,13 @@
             </div>
           </div>
         </div>
-        <!-- <button class="btnFullFeedBack" @click="modalFeedBackController()">
+        <button
+          class="btnFullFeedBack"
+          v-if="$store.state.login"
+          @click="modalFeedBackController()"
+        >
           Avaliar Quarto
-        </button> -->
+        </button>
         <!-- <button v-if="showFeedBackList" class="btnFullFeedBack">
           Ver todas as avaliações
         </button> -->
@@ -88,13 +92,22 @@ export default {
     };
   },
   methods: {
+    async getUserIdForEmail() {
+      const emailUser = JSON.parse(sessionStorage.getItem("loggedUser")).email;
+      try {
+        const response = await this.$store.getters.getUserForEmail(emailUser);
+        return response.id_usuario;
+      } catch (error) {
+        console.log(error);
+        return false;
+      }
+    },
     getFeedBackData() {
       axios
         .get(
           `http://localhost:3333/heliusapi/v1/feedback/accommodations/${this.getAcomodID()}`
         )
         .then((res) => {
-          console.log(res.data)
           this.feedBackList = res.data;
           this.showEmptyFeedBackList = false;
           this.showFeedBackList = true;
@@ -129,22 +142,27 @@ export default {
       return `${p} ${p2}`;
     },
     async sendFeedBack(data) {
-      const idUserQueEstaLogado = 1; // Pegar id do usuario logado quando for finalizada a demanda de usuario.
 
+      let userID = await this.getUserIdForEmail();
+
+      if (!userID) {
+        alert("Você não está logado, tente novamente.");
+        return;
+      }
       const createFeedBack = () => {
         axios.post("http://localhost:3333/heliusapi/v1/feedback/register", {
-          acomodID: `${this.getAcomodID()}`,
-          userID: idUserQueEstaLogado,
+          acomodID: this.getAcomodID(),
+          userID: userID,
           titleComment: `${data.title}`,
           textComment: `${data.comment}`,
           dataComment: `${this.getCurrentUserData()}`,
-          userStars: `${data.stars}`,
+          userStars: data.stars,
           status: 1,
         });
       };
       if (this.feedBackList.length > 0) {
         const userAlreadyExist = this.feedBackList.find(
-          (list) => list.userID == idUserQueEstaLogado
+          (list) => list.userID == userID
         );
         if (userAlreadyExist) {
           alert("Só é permitido uma avaliação por quarto.");
@@ -165,8 +183,8 @@ export default {
         this.showEmptyFeedBackList = false;
         this.showFeedBackList = true;
         setTimeout(() => {
-            this.getFeedBackData();
-          }, 200);
+          this.getFeedBackData();
+        }, 200);
         alert("Avaliação criada com sucesso.");
       }
     },
