@@ -1,6 +1,6 @@
 import connection from "../config/database";
 
-export const completeFeedBackData = (acomod, result) => {
+export const findByAccommodation = (acomod, result) => {
     if (+acomod) {
         connection.execute(
             "SELECT * FROM `avaliacao` WHERE `acomodacao_id_acomodacao` = ?",

@@ -37,41 +37,31 @@ export default {
     },
   },
   created() {
-    if (this.$route.path == "/reservas" && this.$store.state.login == true) {
+  const routePath = this.$route.path;
+  const isLoggedIn = this.$store.state.login;
+  const reservationsSent = this.$store.state.reservationsSent;
+
+  if (routePath === '/reservas') {
+    if (isLoggedIn) {
       this.formPage = true;
       this.orderPage = false;
       this.optionPage = false;
-      return;
-    } else if(this.$route.path == "/reservas" && this.$store.state.login == false) {
-      this.$router.push("/");
-      alert("Você precisa estar logado para fazer uma reserva.");
-      return;
+    } else {
+      this.$router.push('/');
+      alert('Você precisa estar logado para fazer uma reserva.');
     }
-
-    if (
-      this.$route.path == "/reservas/acomodacoes" &&
-      this.$store.state.reservationsSent == true &&
-      this.$store.state.login == true
-    ) {
-      this.formPage = false;
-      this.orderPage = false;
-      this.optionPage = true;
-      return;
-    }
-
-    if (
-      this.$route.path == "/reservas/pedido-finalizado" &&
-      this.$store.state.reservationsSent == true &&
-      this.$store.state.login == true
-    ) {
-      this.formPage = false;
-      this.optionPage = false;
-      this.orderPage = true;
-      return;
-    }
-
-    this.$router.push("/");
-  },
+  } else if (routePath === '/reservas/acomodacoes' && isLoggedIn && reservationsSent) {
+    this.formPage = false;
+    this.orderPage = false;
+    this.optionPage = true;
+  } else if (routePath === '/reservas/pedido-finalizado' && isLoggedIn && reservationsSent) {
+    this.formPage = false;
+    this.optionPage = false;
+    this.orderPage = true;
+  } else {
+    this.$router.push('/');
+  }
+},
 };
 </script>
 

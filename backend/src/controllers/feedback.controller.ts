@@ -1,5 +1,5 @@
 import {
-    completeFeedBackData,
+    findByAccommodation,
     createFullFeedBack,
     getUserforId,
 } from "../models/index.model";
@@ -20,7 +20,7 @@ async function getFeedBackList(req, res) {
             res.status(400).send("Erro ao encontrar o usuario");
         });
     if (acomodID && +acomodID) {
-        completeFeedBackData(acomodID, async (err, resultFdData) => {
+        findByAccommodation(acomodID, async (err, resultFdData) => {
             if (err) {
                 console.log(err);
                 res.status(400).send({

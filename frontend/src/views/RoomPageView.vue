@@ -10,7 +10,7 @@
     ></div>
     <TitleInitialDescription :title="name" :desc="desc" />
 
-    <img :src="imageRoom" @click="skipPage()" />
+    <img :src="imageRoom" v-once @click="skipPage()" />
     <FeedBackModal
       v-if="showModalFeedBack"
       @sendFeedBack="(data) => sendFeedBack(data)"
@@ -22,7 +22,7 @@
       <b class="price--s price">R$ {{ price }}</b>
     </p>
     <div class="feed-back-btn-container">
-      <button class="btnSkip" @click="skipPage()">Reservar</button>
+      <button class="btnSkip" v-once @click="skipPage()">Reservar</button>
     </div>
     <hr />
     <div class="feedback">
